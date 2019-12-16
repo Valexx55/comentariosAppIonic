@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Acceso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #formulario_login="ngForm" (ngSubmit)="acceder(formulario_login.value)">
+    <ion-item>
+      <ion-label>Nombre</ion-label>
+      <ion-input type="text" #nombre="ngModel" name="nombre" [(ngModel)]="login.nombre" required pattern=".{7,}">
+      </ion-input>
+      <br>
+      <small [hidden]="!(formulario_login.submitted && !nombre.valid)">
+        Nombre de al menos 6 letras
+      </small>
+    </ion-item>
+    <ion-item>
+      <ion-label>PWD</ion-label>
+      <ion-input type="password" #pwd="ngModel" name="pwd" igual="nombre" [(ngModel)]="login.pwd" required></ion-input>
+      <br>
+      <small [hidden]="(pwd.pristine||pwd.valid)">
+        Contraseña obligatoria igual al nombre
+      </small>
+    </ion-item>
+    <ion-button type="submit" shape="round" fill="solid" [disabled]=!(formulario_login.valid)>Acceder</ion-button>
+  </form>
+</ion-content>

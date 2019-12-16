@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>ESTRENOS</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-slides [options]="this.opciones_carrusel.opcion_coverflow"
+    *ngIf="lista_pelis?.length>0&&opciones_carrusel.opcion=='cover'">
+    <ion-slide *ngFor="let peli of lista_pelis">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{peli.titulo}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-img [src]="peli.ruta" (click)="peliTocada(peli)"></ion-img>
+        </ion-card-content>
+      </ion-card>
+    </ion-slide>
+  </ion-slides>
+  <ion-slides [options]="this.opciones_carrusel.opcion_cubo"
+    *ngIf="lista_pelis?.length>0&&opciones_carrusel.opcion=='cubo'">
+    <ion-slide *ngFor="let peli of lista_pelis">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{peli.titulo}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-img [src]="peli.ruta" (click)="peliTocada(peli)"></ion-img>
+        </ion-card-content>
+      </ion-card>
+    </ion-slide>
+  </ion-slides>
+
+  <ion-slides [options]="this.opciones_carrusel.opcion_flip"
+    *ngIf="lista_pelis?.length>0&&opciones_carrusel.opcion=='flip'">
+    <ion-slide *ngFor="let peli of lista_pelis">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{peli.titulo}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-img [src]="peli.ruta" (click)="peliTocada(peli)"></ion-img>
+        </ion-card-content>
+      </ion-card>
+    </ion-slide>
+  </ion-slides>
+  <ion-segment (ionChange)="cambioVista($event)">
+    <ion-segment-button value="cover">
+      <ion-label>COVER</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="flip">
+      <ion-label>FLIP</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="cubo">
+      <ion-label>CUBO</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+</ion-content>
