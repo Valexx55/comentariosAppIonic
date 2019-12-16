@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Login } from './login/login';
 import { Observable } from 'rxjs';
 import { NuevoComentarioRequest } from './comentarios/nuevo-comentario-request';
+import { ComentarioPut } from './comentarios/comentario-put';
+import { NuevoComentarioResponse } from './comentarios/nuevo-comentario-response';
 
 
 @Injectable({
@@ -17,7 +19,7 @@ export class RemoteApiService {
   public static readonly DIR_SERVCIO_GET_COMENTARIOS = "http://"+RemoteApiService.DIR_SERVIDOR+"/cfticionic/comentarios/foto";
   public static readonly DIR_SERVCIO_POST_COMENTARIO = "http://"+RemoteApiService.DIR_SERVIDOR+"/cfticionic/comentario";
   public static readonly DIR_SERVCIO_DELETE_COMENTARIO = "http://"+RemoteApiService.DIR_SERVIDOR+"/cfticionic/comentario";
-
+  public static readonly DIR_SERVCIO_PUT_COMENTARIO = "http://"+RemoteApiService.DIR_SERVIDOR+"/cfticionic/comentario";
 
   constructor(public httpcliente: HttpClient) { }
 
@@ -83,6 +85,22 @@ export class RemoteApiService {
         console.log ("llamadno DELETE " + RemoteApiService.DIR_SERVCIO_DELETE_COMENTARIO + " Token " + token +" IDCOMENTARIO " + idcomentario + " NOMBRE " + nombre);
         resp_servidor = this.httpcliente.delete (RemoteApiService.DIR_SERVCIO_DELETE_COMENTARIO, {observe:"response", params:parametros});
       
+      return resp_servidor;
+    }
+
+    public putComentarioPeli (comentarioput:ComentarioPut):Observable<Object>
+    {
+      let resp_servidor : Observable<Object>;
+      let cabecera: HttpHeaders;
+      let json_comentario:string;
+      
+
+        json_comentario = JSON.stringify(comentarioput);
+        console.log ("llamando PUT " + RemoteApiService.DIR_SERVCIO_PUT_COMENTARIO + " comentario " + json_comentario);
+        cabecera = new HttpHeaders().set('Content-type','application/json'); 
+        resp_servidor = this.httpcliente.put (RemoteApiService.DIR_SERVCIO_PUT_COMENTARIO, {observe:"response", headers:cabecera});
+   
+
       return resp_servidor;
     }
 }

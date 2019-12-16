@@ -21,6 +21,8 @@ export class ComentariosPage implements OnInit {
   esperando:boolean;
   elementoEspera: HTMLIonLoadingElement;
   lista_comentarios: Array<Comentario>;
+  enedicion:boolean;
+  nuevaopinion:string;
 
 
 
@@ -33,6 +35,8 @@ export class ComentariosPage implements OnInit {
     let crendeciales:string =  window.localStorage.getItem(Constantes.CLAVE_CREDENCIALES);
     this.login = JSON.parse(crendeciales);
     console.log ("crendeciales ..." + crendeciales);
+
+    this.enedicion = false;
   
   }
 
@@ -50,7 +54,7 @@ export class ComentariosPage implements OnInit {
         } else if (respuesta_http.status==204)
         {
           console.log ("Pelicula sin comentarios");
-          //this.informarPeliSinComentarios();
+          this.informarPeliSinComentarios();
         }
         this.ocultarEspera();
       }, resp_ko => {
@@ -61,7 +65,34 @@ export class ComentariosPage implements OnInit {
     );
   }
 
-  
+  async informarPeliSinComentarios()
+  {
+    const toast = await this.tc.create({
+      message: 'Peli sin comentarios',
+      duration: 2500,
+      position: "middle"
+    });
+    toast.present();
+  }
+  addComentario ()
+  {
+    console.log("Tocó el FAB de add comentario");
+    this.enedicion = true;
+  }
+
+  publicarNuevoComentario()
+  {
+    console.log ("Nueva opi " + this.nuevaopinion);
+   this.enedicion = false;
+    this.nuevaopinion='';
+  }
+
+  cancelarNuevoComentario()
+  {
+    console.log ("Cancelando " + this.nuevaopinion);
+    this.enedicion = false;
+    this.nuevaopinion='';
+  }
 
 public async ocultarEspera():Promise<void> {
     console.log("ocultandoEspera  ...");
@@ -93,8 +124,10 @@ public async mostrarEspera(mensaje:string):Promise<void> {
     console.log("esperando == false la tx ha terminado antes de mostrarse el elemento");
     await this.elementoEspera.dismiss();
   }
-
 }
 
-
+ionViewDidEnter ()
+{
+  console.log ("Entró en ionViewDidEnter de comentarios page");
+}
 }

@@ -1,9 +1,39 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Comentarios</ion-title>
+    <ion-title>
+      Comentarios de {{peli.titulo}}
+      <ion-chip>
+        <ion-avatar>
+          <img src="https://avatars0.githubusercontent.com/u/20986621?s=400&v=4">
+        </ion-avatar>
+        <ion-label>{{login.nombre}}</ion-label>
+        <ion-icon name="close-circle"></ion-icon>
+      </ion-chip>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-item *ngIf="enedicion">
+    <ion-label>TU Opinión</ion-label>
+    <ion-textarea [(ngModel)]="nuevaopinion" placeholder="..."></ion-textarea>
+  </ion-item>
+  <ion-item *ngIf="enedicion">
+    <ion-button class="ion-activatable" (click)="publicarNuevoComentario()">
+      PUBLICAR
+      <ion-icon slot="start" name="clipboard"></ion-icon>
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+    </ion-button>
+    <ion-button class="ion-activatable" (click)="cancelarNuevoComentario()">
+      CANCELAR
+      <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+    </ion-button>
+  </ion-item>
+  <ion-fab *ngIf="!enedicion" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addComentario()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
 </ion-content>

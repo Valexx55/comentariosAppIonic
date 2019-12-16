@@ -408,7 +408,7 @@ export class OpcionesCarrusel {
         }
       };
 
-      this.opcion = 'cover';
+      this.opcion = 'flip';
 
     }
 }
