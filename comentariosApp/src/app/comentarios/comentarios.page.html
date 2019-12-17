@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>
       Comentarios de {{peli.titulo}}
-      <ion-chip>
+      <ion-chip (click)="chipTocada()">
         <ion-avatar>
           <img src="https://avatars0.githubusercontent.com/u/20986621?s=400&v=4">
         </ion-avatar>
@@ -14,6 +14,19 @@
 </ion-header>
 
 <ion-content>
+  <ion-list *ngIf="lista_comentarios?.length>0">
+    <ion-badge>{{lista_comentarios.length}} comentaios</ion-badge>
+    <ion-item-sliding *ngFor="let comentario of lista_comentarios" #elementoDeslizante>
+      <ion-item>
+        <ion-label>{{comentario.texto}}</ion-label>
+        <ion-note>{{comentario.autor}}</ion-note>
+        <ion-note><ion-datetime displayFormat="D MMM YYYY H:mm" [value]="getFechaHora(comentario.momento)"></ion-datetime></ion-note>
+      </ion-item>
+      <ion-item-options side="end" *ngIf="login.nombre==comentario.autor">
+        <ion-item-option (click)="borrar(comentario, elementoDeslizante)">Eliminar</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
   <ion-item *ngIf="enedicion">
     <ion-label>TU Opinión</ion-label>
     <ion-textarea [(ngModel)]="nuevaopinion" placeholder="..."></ion-textarea>
@@ -35,5 +48,9 @@
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+  <ion-item>
+    <ion-label>Actualizar automáticamente</ion-label>
+    <ion-checkbox slot="start" color="light" ></ion-checkbox>
+  </ion-item>
 
 </ion-content>

@@ -8,6 +8,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Comentario } from './comentario';
 import { NuevoComentarioRequest } from './nuevo-comentario-request';
 
+
 @Component({
   selector: 'app-comentarios',
   templateUrl: './comentarios.page.html',
@@ -40,6 +41,90 @@ export class ComentariosPage implements OnInit {
   
   }
 
+  getFechaHora (fechahora:number):string
+  {
+    let momento_calulado:string = '';
+
+    momento_calulado = new Date(fechahora).toISOString();
+
+    return momento_calulado;
+
+  }
+  borrar(comentario:Comentario, elementoDeslizante:IonItemSliding)
+  {
+    console.log ("quiere borrar el comentario " + comentario.id);
+    this.pedirConfirmacion(comentario, elementoDeslizante);
+  
+  }
+  public async informarErrorBorrarComentarios ():Promise<void>
+  {
+
+    let alert : HTMLIonAlertElement = await this.ac.create({
+      header: 'Error al borrar el comentario',
+      message: 'Revise sus permisos o inténtelo más tarde',
+      buttons: [
+        {
+          text: 'Aceptar',
+          handler: () => {
+            console.log('se cierra el diálogo');
+          }
+        }
+      ]
+    });
+
+     await alert.present();
+  }
+  borrarConfirmado (comentario:Comentario)
+  {
+
+    console.log ("confirma que quiere borrar el comentario");
+    this.servicio_remoto.deleteComentarioPeli(this.login.token, comentario.id, comentario.autor).subscribe(
+      resp_ok => {
+        let respuesta_http : HttpResponse<void> = <HttpResponse<void>>resp_ok;
+        switch (respuesta_http.status)
+        {
+          case 403: 
+          case 400:  this.informarErrorBorrarComentarios();
+          break;
+          case 200:  this.refrescaComentarios();//this.informarComentarioBorrado();
+          break;
+        }
+      },
+      resp_ko => { this.informarErrorBorrarComentarios();}
+    )
+
+  }
+  public async pedirConfirmacion (comentario:Comentario,  elementoDeslizante:IonItemSliding):Promise<void>
+  {
+    let alert : HTMLIonAlertElement = await this.ac.create({
+      header: "MENSAJE DE CONFIRMACIÓN",
+      message: '¿Confirma eliminar comentario #' + comentario.id + '?',
+      buttons: [
+        {
+          text: 'Sí',
+          handler: () => {
+            console.log('se cierra el diálogo');
+            this.borrarConfirmado (comentario);
+          }
+        },
+        {
+          text: 'No',
+          handler: () => {
+            console.log('se cierra el elemnto');
+            elementoDeslizante.close();
+          }
+        }
+      ]
+    });
+
+     await alert.present();
+    
+  }
+
+
+chipTocada(){
+  console.log("Chip tocada");
+}
 
   ngOnInit() {
     console.log ("obteniendo comentarios ...");
@@ -80,13 +165,103 @@ export class ComentariosPage implements OnInit {
     this.enedicion = true;
   }
 
-  publicarNuevoComentario()
+  public publicarNuevoComentario()
   {
+    this.enedicion=false;
     console.log ("Nueva opi " + this.nuevaopinion);
-   this.enedicion = false;
-    this.nuevaopinion='';
+    let nuevo_comentario: NuevoComentarioRequest = new NuevoComentarioRequest();
+    nuevo_comentario.nombre = this.login.nombre;
+    nuevo_comentario.token = this.login.token;
+    nuevo_comentario.idfoto = this.peli.idfoto;
+    nuevo_comentario.texto = this.nuevaopinion
+    this.mostrarEspera("Publicando comentario . . .");
+    this.servicio_remoto.postComentarioPeli(nuevo_comentario).subscribe (
+      resp_ok => {
+        let respuesta_http : HttpResponse<void> = <HttpResponse<void>>resp_ok;
+        switch (respuesta_http.status)
+        {
+          case 403: 
+          case 400:  this.informarErrorInsertarComentario();
+          break;
+          case 201:  this.refrescaComentarios();//tb podemos informarl y despues de que cierre actualizar//this.informarComentarioBorrado();
+          break;
+        }
+        this.nuevaopinion='';
+        this.ocultarEspera();
+      },
+      resp_ko => { this.informarErrorInsertarComentario();
+        this.nuevaopinion='';
+        this.ocultarEspera();}
+    )
+
   }
 
+
+  public async informarErrorInsertarComentario ():Promise<void>
+  {
+
+    let alert : HTMLIonAlertElement = await this.ac.create({
+      header: 'Error al publicar el comentario',
+      message: 'Revise sus permisos o inténtelo más tarde',
+      buttons: [
+        {
+          text: 'Aceptar',
+          handler: () => {
+            console.log('se cierra el diálogo');
+          }
+        }
+      ]
+    });
+
+     await alert.present();
+  }
+
+    
+  refrescaComentarios() {
+    console.log('Empieza el refresco de comentarios');
+  
+    this.servicio_remoto.getComentariosPeli(this.login.token, this.peli.idfoto)
+      .subscribe( 
+        resp_ok => {  
+          let respuesta_http : HttpResponse<Array<Comentario>> = resp_ok as  HttpResponse<Array<Comentario>>;
+          if (respuesta_http.status==200)
+          {
+            this.lista_comentarios = respuesta_http.body;
+            this.lista_comentarios.map(comentario => console.log (comentario.texto + " " +comentario.id + " " +comentario.autor));
+          } else if (respuesta_http.status==204)
+          {
+            console.log ("Pelicula sin comentarios");
+            this.lista_comentarios=null;
+            this.informarPeliSinComentarios();
+          }
+          
+        }, resp_ko => {
+          console.log ("Error al recuperar la lista de comentarios");
+          this.informarErrorComentarios(<HttpErrorResponse>resp_ko);
+          
+        });
+  
+  } 
+  
+
+public async informarErrorComentarios (error:HttpErrorResponse):Promise<void>
+  {
+
+    let alert : HTMLIonAlertElement = await this.ac.create({
+      header: error.statusText + " " + error.status,
+      message: '¡Faltan comentarios! Inténtelo de nuevo',
+      buttons: [
+        {
+          text: 'Aceptar',
+          handler: () => {
+            console.log('se cierra el diálogo');
+          }
+        }
+      ]
+    });
+
+     await alert.present();
+  }
   cancelarNuevoComentario()
   {
     console.log ("Cancelando " + this.nuevaopinion);
