@@ -24,6 +24,8 @@ export class ComentariosPage implements OnInit {
   lista_comentarios: Array<Comentario>;
   enedicion:boolean;
   nuevaopinion:string;
+  autoload:boolean;
+  idalarma:number;
 
 
 
@@ -38,6 +40,7 @@ export class ComentariosPage implements OnInit {
     console.log ("crendeciales ..." + crendeciales);
 
     this.enedicion = false;
+    this.autoload=false;
   
   }
 
@@ -267,6 +270,27 @@ public async informarErrorComentarios (error:HttpErrorResponse):Promise<void>
     console.log ("Cancelando " + this.nuevaopinion);
     this.enedicion = false;
     this.nuevaopinion='';
+  }
+
+  saludo(mensaje:string)
+  {
+    console.log("Hola Romero el madero " +mensaje);
+  }
+
+  acutalizarauto()
+  { //si autoload es true --> programo alarma
+    //si no --> desactivo/cancelo
+    if (this.autoload)
+    {
+      //this.idalarma = window.setInterval(this.refrescaComentarios, 3000);
+      this.idalarma = window.setInterval(
+        ()=>{this.refrescaComentarios();}, 
+        3000);
+    }
+    else {
+      window.clearInterval(this.idalarma);
+    }
+   
   }
 
 public async ocultarEspera():Promise<void> {

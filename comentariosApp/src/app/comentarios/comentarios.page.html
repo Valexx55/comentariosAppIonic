@@ -50,7 +50,7 @@
   </ion-fab>
   <ion-item>
     <ion-label>Actualizar automáticamente</ion-label>
-    <ion-checkbox slot="start" color="light" ></ion-checkbox>
+    <ion-checkbox (ionChange)="acutalizarauto()" [(ngModel)]="autoload" slot="start" color="light" ></ion-checkbox>
   </ion-item>
 
 </ion-content>
