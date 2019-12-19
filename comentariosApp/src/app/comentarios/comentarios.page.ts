@@ -220,7 +220,7 @@ chipTocada(){
   }
 
     
-  refrescaComentarios() {
+  refrescaComentarios(event?) {
     console.log('Empieza el refresco de comentarios');
   
     this.servicio_remoto.getComentariosPeli(this.login.token, this.peli.idfoto)
@@ -237,11 +237,17 @@ chipTocada(){
             this.lista_comentarios=null;
             this.informarPeliSinComentarios();
           }
-          
+          if (event!=null)
+          {
+            event.target.complete();
+          }
         }, resp_ko => {
           console.log ("Error al recuperar la lista de comentarios");
           this.informarErrorComentarios(<HttpErrorResponse>resp_ko);
-          
+          if (event!=null)//si
+          {
+            event.target.complete();
+          }
         });
   
   } 
